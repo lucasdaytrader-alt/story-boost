@@ -6,24 +6,28 @@
  * para permitir futuros produtos (templates, ícones, presets etc.) sem remodelar o banco.
  *
  * Story Boost® é o primeiro "Product" registrado sobre esta estrutura.
+ *
+ * Postgres (Neon), não SQLite: campos que guardam timestamp em epoch-ms usam
+ * `bigint(mode:"number")` porque o `integer` do Postgres é 32 bits e estoura
+ * com Date.now() — no SQLite isso não era um problema (integer lá é 64 bits).
  */
 
-import { sqliteTable, text, integer, primaryKey } from "drizzle-orm/sqlite-core";
+import { pgTable, text, integer, bigint, boolean, primaryKey } from "drizzle-orm/pg-core";
 
 // ---------------------------------------------------------------------------
 // Product — cada app construído sobre o Boost Engine é um "Product"
 // ---------------------------------------------------------------------------
-export const products = sqliteTable("products", {
+export const products = pgTable("products", {
   id: text("id").primaryKey(),
   slug: text("slug").notNull().unique(),
   name: text("name").notNull(),
-  createdAt: integer("created_at").notNull(),
+  createdAt: bigint("created_at", { mode: "number" }).notNull(),
 });
 
 // ---------------------------------------------------------------------------
 // Categories — sempre vinculadas a um Product
 // ---------------------------------------------------------------------------
-export const categories = sqliteTable("categories", {
+export const categories = pgTable("categories", {
   id: text("id").primaryKey(),
   productId: text("product_id").notNull().references(() => products.id),
   name: text("name").notNull(),
@@ -34,7 +38,7 @@ export const categories = sqliteTable("categories", {
 // ---------------------------------------------------------------------------
 // Tags — vocabulário livre usado pela busca inteligente
 // ---------------------------------------------------------------------------
-export const tags = sqliteTable("tags", {
+export const tags = pgTable("tags", {
   id: text("id").primaryKey(),
   name: text("name").notNull().unique(),
 });
@@ -42,7 +46,7 @@ export const tags = sqliteTable("tags", {
 // ---------------------------------------------------------------------------
 // DigitalAsset — entidade genérica (sticker hoje; template/ícone/preset amanhã)
 // ---------------------------------------------------------------------------
-export const digitalAssets = sqliteTable("digital_assets", {
+export const digitalAssets = pgTable("digital_assets", {
   id: text("id").primaryKey(),
   productId: text("product_id").notNull().references(() => products.id),
   categoryId: text("category_id").references(() => categories.id),
@@ -50,12 +54,12 @@ export const digitalAssets = sqliteTable("digital_assets", {
   name: text("name").notNull(),
   previewUrl: text("preview_url").notNull(),
   fileUrl: text("file_url").notNull(),
-  isNew: integer("is_new", { mode: "boolean" }).notNull().default(false),
+  isNew: boolean("is_new").notNull().default(false),
   usageCount: integer("usage_count").notNull().default(0),
-  createdAt: integer("created_at").notNull(),
+  createdAt: bigint("created_at", { mode: "number" }).notNull(),
 });
 
-export const assetTags = sqliteTable(
+export const assetTags = pgTable(
   "asset_tags",
   {
     assetId: text("asset_id").notNull().references(() => digitalAssets.id),
@@ -67,7 +71,7 @@ export const assetTags = sqliteTable(
 // ---------------------------------------------------------------------------
 // Packs — agrupam DigitalAssets; podem ser gratuitos ou premium
 // ---------------------------------------------------------------------------
-export const packs = sqliteTable("packs", {
+export const packs = pgTable("packs", {
   id: text("id").primaryKey(),
   productId: text("product_id").notNull().references(() => products.id),
   categoryId: text("category_id").references(() => categories.id),
@@ -75,14 +79,14 @@ export const packs = sqliteTable("packs", {
   name: text("name").notNull(),
   description: text("description"),
   coverUrl: text("cover_url").notNull(),
-  isPremium: integer("is_premium", { mode: "boolean" }).notNull().default(false),
-  isFeatured: integer("is_featured", { mode: "boolean" }).notNull().default(false),
+  isPremium: boolean("is_premium").notNull().default(false),
+  isFeatured: boolean("is_featured").notNull().default(false),
   priceCents: integer("price_cents"), // null se gratuito
-  createdAt: integer("created_at").notNull(),
-  updatedAt: integer("updated_at").notNull(),
+  createdAt: bigint("created_at", { mode: "number" }).notNull(),
+  updatedAt: bigint("updated_at", { mode: "number" }).notNull(),
 });
 
-export const packAssets = sqliteTable(
+export const packAssets = pgTable(
   "pack_assets",
   {
     packId: text("pack_id").notNull().references(() => packs.id),
@@ -97,7 +101,7 @@ export const packAssets = sqliteTable(
 // (manual hoje; tag_similarity / co_access / behavior no futuro), sem
 // necessidade de remodelar a tabela — só passamos a inserir com outra origem.
 // ---------------------------------------------------------------------------
-export const packRelations = sqliteTable(
+export const packRelations = pgTable(
   "pack_relations",
   {
     packId: text("pack_id").notNull().references(() => packs.id),
@@ -111,54 +115,55 @@ export const packRelations = sqliteTable(
 // ---------------------------------------------------------------------------
 // Users
 // ---------------------------------------------------------------------------
-export const users = sqliteTable("users", {
+export const users = pgTable("users", {
   id: text("id").primaryKey(),
   email: text("email").notNull().unique(),
   name: text("name").notNull(),
   avatarUrl: text("avatar_url"),
   passwordHash: text("password_hash"), // null se conta social (Google/Apple)
   authProvider: text("auth_provider").notNull().default("email"), // email | google | apple
-  isAdmin: integer("is_admin", { mode: "boolean" }).notNull().default(false),
-  createdAt: integer("created_at").notNull(),
+  isAdmin: boolean("is_admin").notNull().default(false),
+  plan: text("plan"), // rótulo livre definido pelo admin ao criar a conta (ex: "Mensal", "Vitalício")
+  createdAt: bigint("created_at", { mode: "number" }).notNull(),
 });
 
 // ---------------------------------------------------------------------------
 // Devices/Sessions — limite de 2 dispositivos simultâneos (regra da Fase 2)
 // ---------------------------------------------------------------------------
-export const devices = sqliteTable("devices", {
+export const devices = pgTable("devices", {
   id: text("id").primaryKey(),
   userId: text("user_id").notNull().references(() => users.id),
   sessionToken: text("session_token").notNull().unique(),
   deviceModel: text("device_model").notNull(),
   os: text("os").notNull(),
   approxLocation: text("approx_location"),
-  lastAccessAt: integer("last_access_at").notNull(),
-  createdAt: integer("created_at").notNull(),
+  lastAccessAt: bigint("last_access_at", { mode: "number" }).notNull(),
+  createdAt: bigint("created_at", { mode: "number" }).notNull(),
 });
 
 // ---------------------------------------------------------------------------
 // Entitlements — licenciamento. Hoje sempre "active" (ADR-003: sem gateway
 // de pagamento ainda). O "buraco" para o gateway plugar depois já existe aqui.
 // ---------------------------------------------------------------------------
-export const entitlements = sqliteTable("entitlements", {
+export const entitlements = pgTable("entitlements", {
   id: text("id").primaryKey(),
   userId: text("user_id").notNull().references(() => users.id),
   productId: text("product_id").notNull().references(() => products.id),
   packId: text("pack_id").references(() => packs.id), // null = acesso ao catálogo principal
   status: text("status").notNull().default("active"), // active | revoked
-  source: text("source").notNull().default("stub"), // stub | iap_apple | iap_google | gateway
-  grantedAt: integer("granted_at").notNull(),
+  source: text("source").notNull().default("stub"), // stub | manual | iap_apple | iap_google | gateway
+  grantedAt: bigint("granted_at", { mode: "number" }).notNull(),
 });
 
 // ---------------------------------------------------------------------------
 // Favorites
 // ---------------------------------------------------------------------------
-export const favorites = sqliteTable(
+export const favorites = pgTable(
   "favorites",
   {
     userId: text("user_id").notNull().references(() => users.id),
     assetId: text("asset_id").notNull().references(() => digitalAssets.id),
-    createdAt: integer("created_at").notNull(),
+    createdAt: bigint("created_at", { mode: "number" }).notNull(),
   },
   (t) => [primaryKey({ columns: [t.userId, t.assetId] })]
 );
@@ -167,7 +172,7 @@ export const favorites = sqliteTable(
 // Analytics — eventos genéricos (view, search, favorite, share, use_in_story)
 // Alimenta o filtro "Mais usados" e o relatório de "buscas sem resultado" do CMS.
 // ---------------------------------------------------------------------------
-export const analyticsEvents = sqliteTable("analytics_events", {
+export const analyticsEvents = pgTable("analytics_events", {
   id: text("id").primaryKey(),
   userId: text("user_id").references(() => users.id),
   productId: text("product_id").notNull().references(() => products.id),
@@ -175,5 +180,5 @@ export const analyticsEvents = sqliteTable("analytics_events", {
   entityType: text("entity_type"), // asset | pack | category
   entityId: text("entity_id"),
   query: text("query"), // usado quando eventType = search
-  createdAt: integer("created_at").notNull(),
+  createdAt: bigint("created_at", { mode: "number" }).notNull(),
 });

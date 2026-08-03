@@ -35,7 +35,7 @@ const cover = (seedName: string) =>
   `https://picsum.photos/seed/${encodeURIComponent(seedName)}/800/400`;
 
 async function seed() {
-  runMigrations();
+  await runMigrations();
 
   console.log("🌱 Iniciando seed...");
 

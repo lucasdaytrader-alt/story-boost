@@ -59,7 +59,7 @@ async function main() {
     process.exit(1);
   }
 
-  runMigrations();
+  await runMigrations();
 
   console.log(`📂 Importando figurinhas de: ${rootPath}`);
 

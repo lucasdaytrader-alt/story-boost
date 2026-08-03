@@ -31,6 +31,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <Link href="/admin/packs" className="rounded-lg px-3 py-1.5 text-ink/70 hover:bg-mist">
             Packs
           </Link>
+          <Link href="/admin/usuarios" className="rounded-lg px-3 py-1.5 text-ink/70 hover:bg-mist">
+            Usuários
+          </Link>
         </nav>
       </header>
       <main className="mx-auto max-w-4xl px-6 py-6">{children}</main>

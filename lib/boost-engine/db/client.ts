@@ -1,50 +1,37 @@
 /**
  * Boost Engine — Conexão com o banco de dados
  *
- * Desenvolvimento: SQLite nativo do Node (node:sqlite), zero configuração.
- * Produção (futuro): trocar para Postgres/Supabase é só trocar este arquivo —
- * o restante da aplicação usa apenas `db` (instância Drizzle) e nunca fala
- * diretamente com o driver.
+ * Postgres (Neon), via driver HTTP serverless — funciona tanto em dev local
+ * quanto nas funções serverless da Vercel (sem pool de conexões TCP, que não
+ * sobrevive bem a esse ambiente). Antes disso o projeto usava SQLite local
+ * (node:sqlite): funcionava em dev, mas quebrava em produção na Vercel, cujo
+ * filesystem é somente-leitura/efêmero fora de /tmp.
  */
 
-import { DatabaseSync } from "node:sqlite";
-import { drizzle } from "drizzle-orm/sqlite-proxy";
-import path from "node:path";
+import { neon } from "@neondatabase/serverless";
+import { drizzle } from "drizzle-orm/neon-http";
 import * as schema from "./schema";
 
-const DB_PATH = path.join(process.cwd(), "data", "story-boost.db");
-
-// Uma única conexão reaproveitada entre requisições (padrão recomendado para
-// SQLite em dev com Next.js hot-reload).
-declare global {
-  // eslint-disable-next-line no-var
-  var __boostEngineSqlite: DatabaseSync | undefined;
+try {
+  // Fora do Next.js (scripts tsx como migrate/seed) ninguém carrega .env.local
+  // automaticamente. Em produção na Vercel o arquivo não existe — e não faz
+  // falta, porque as env vars já vêm injetadas pela integração com o banco.
+  process.loadEnvFile(".env.local");
+} catch {
+  // .env.local ausente: segue com o que já estiver em process.env.
 }
 
-export const sqlite =
-  globalThis.__boostEngineSqlite ?? new DatabaseSync(DB_PATH);
+const connectionString = process.env.DATABASE_URL ?? process.env.POSTGRES_URL;
 
-if (process.env.NODE_ENV !== "production") {
-  globalThis.__boostEngineSqlite = sqlite;
+if (!connectionString) {
+  throw new Error(
+    "DATABASE_URL não configurada. Defina em .env.local (dev) ou nas variáveis de ambiente do projeto na Vercel (prod)."
+  );
 }
 
-export const db = drizzle(
-  async (sqlQuery, params, method) => {
-    const stmt = sqlite.prepare(sqlQuery);
-    if (method === "run") {
-      const info = stmt.run(...params);
-      return { rows: [], ...{ lastInsertRowid: info.lastInsertRowid } } as {
-        rows: unknown[];
-      };
-    }
-    // IMPORTANTE: setReturnArrays(true) faz o node:sqlite devolver cada linha
-    // como array posicional em vez de objeto nomeado. Sem isso, duas colunas
-    // com o mesmo nome (ex: packs.name e categories.name em um JOIN) colidem
-    // no objeto resultante e corrompem a ordem dos valores subsequentes —
-    // bug real encontrado e corrigido durante a Sprint 2.
-    stmt.setReturnArrays(true);
-    const rows = stmt.all(...params) as unknown as unknown[][];
-    return { rows };
-  },
-  { schema, casing: "snake_case" }
-);
+// O App Router do Next.js substitui o fetch global para aplicar seu Data
+// Cache. Sem desativar isso aqui, as chamadas HTTP internas do driver da Neon
+// ficam sujeitas a essa camada e falham ("Failed query") sob next dev/Turbopack.
+const sql = neon(connectionString, { fetchOptions: { cache: "no-store" } });
+
+export const db = drizzle(sql, { schema });

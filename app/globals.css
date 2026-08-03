@@ -1,0 +1,172 @@
+@import "tailwindcss";
+@import "@fontsource/plus-jakarta-sans/700.css";
+@import "@fontsource/plus-jakarta-sans/800.css";
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/500.css";
+@import "@fontsource/inter/600.css";
+
+:root {
+  /* Story Boost — tokens de marca (ADR de design, Fase 4) */
+  --sb-ink: #16121f;      /* texto principal, quase-preto com leve tom violeta */
+  --sb-paper: #ffffff;    /* fundo geral, limpo */
+  --sb-card: #1c1730;     /* chrome escuro dos cards premium (packs/categorias) */
+  --sb-mist: #f5f4f8;     /* fundo neutro onde os adesivos são protagonistas */
+  --sb-line: #ebe9f0;     /* linhas/bordas discretas */
+  --sb-muted: #837e94;    /* texto secundário */
+  --sb-flame: #ff4361;    /* acento primário — energia */
+  --sb-ultra: #7c3aed;    /* acento secundário — profundidade */
+  --sb-sun: #ffb020;      /* destaque de novidade/atenção */
+
+  --background: var(--sb-paper);
+  --foreground: var(--sb-ink);
+}
+
+@theme inline {
+  --color-ink: var(--sb-ink);
+  --color-paper: var(--sb-paper);
+  --color-card: var(--sb-card);
+  --color-mist: var(--sb-mist);
+  --color-line: var(--sb-line);
+  --color-muted: var(--sb-muted);
+  --color-flame: var(--sb-flame);
+  --color-ultra: var(--sb-ultra);
+  --color-sun: var(--sb-sun);
+
+  --font-display: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* MVP é somente light mode (decisão de produto — Fase 4): não há um TOGGLE
+   claro/escuro no app. A Home usa um canvas escuro como escolha de
+   ART DIRECTION fixa da tela (como o preview de elemento já fazia com
+   bg-ink/95) — não é modo escuro configurável, é o visual permanente
+   daquela tela. */
+
+.brand-gradient {
+  background-image: linear-gradient(135deg, var(--sb-flame) 0%, var(--sb-ultra) 100%);
+}
+
+.brand-gradient-text {
+  background-image: linear-gradient(135deg, var(--sb-flame) 0%, var(--sb-ultra) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* wash suave de marca atrás do hero — fundo continua claro, só ganha profundidade */
+.hero-wash {
+  background-image:
+    radial-gradient(circle at 15% 0%, color-mix(in srgb, var(--sb-flame) 16%, transparent) 0%, transparent 55%),
+    radial-gradient(circle at 100% 20%, color-mix(in srgb, var(--sb-ultra) 14%, transparent) 0%, transparent 50%);
+}
+
+/* esconde a barra de rolagem em carrosséis horizontais, mantendo o scroll */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Design System — elevação, movimento e estados (Sprint UX/UI final)     */
+/* ---------------------------------------------------------------------- */
+
+/* elevação — 3 níveis de sombra consistentes, usados por toda a UI em vez
+   de valores de shadow ad hoc. Nível 1 = repouso, 2 = hover/destaque,
+   3 = flutuante (barras fixas, sheets). */
+.shadow-elevation-1 {
+  box-shadow: 0 1px 2px rgba(22, 18, 31, 0.05), 0 1px 1px rgba(22, 18, 31, 0.04);
+}
+.shadow-elevation-2 {
+  box-shadow: 0 10px 24px -6px rgba(22, 18, 31, 0.16), 0 2px 6px rgba(22, 18, 31, 0.08);
+}
+.shadow-elevation-3 {
+  box-shadow: 0 -4px 24px -4px rgba(22, 18, 31, 0.12), 0 -1px 4px rgba(22, 18, 31, 0.06);
+}
+.shadow-glow-brand {
+  box-shadow: 0 10px 24px -6px color-mix(in srgb, var(--sb-flame) 45%, transparent);
+}
+
+/* movimento — easing "premium" (leve overshoot na saída) usado em toda
+   microinteração de hover/press, no lugar de transition-all genérico. */
+.transition-premium {
+  transition-property: transform, box-shadow, background-color, color, border-color, opacity;
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  transition-duration: 220ms;
+}
+
+/* foco — anel consistente e acessível para navegação por teclado, sobre
+   fundo claro (.focus-ring) ou sobre cards/superfícies escuras (-dark). */
+.focus-ring {
+  outline: none;
+}
+.focus-ring:focus-visible {
+  box-shadow: 0 0 0 2px var(--sb-paper), 0 0 0 4px var(--sb-flame);
+}
+.focus-ring-dark:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--sb-card), 0 0 0 4px var(--sb-flame);
+}
+
+/* skeleton — shimmer para estados de carregamento (loading.tsx por rota) */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--sb-mist);
+}
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.7),
+    transparent
+  );
+  animation: skeleton-shimmer 1.6s infinite;
+}
+@keyframes skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* superfície de vidro escuro — header/nav/busca flutuantes sobre o canvas
+   escuro da Home (linguagem "Arc"): translúcido, borrado, borda de 1px quase
+   invisível que só aparece pelo contraste de luz. */
+.glass-dark {
+  background-color: color-mix(in srgb, var(--sb-ink) 55%, transparent);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* textura de grão sutil sobre os blooms do hero — evita banding no gradiente
+   e dá uma sensação mais "física"/impressa em vez de gradiente CSS puro. */
+.grain::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .transition-premium,
+  .skeleton::after {
+    animation: none;
+    transition: none;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}

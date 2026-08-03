@@ -31,7 +31,9 @@ export async function createSession(
 ): Promise<{ ok: true } | { ok: false; error: "device_limit" }> {
   const activeDevices = await db.select().from(devices).where(eq(devices.userId, userId));
 
-  if (activeDevices.length >= MAX_DEVICES) {
+  // Regra de negócio da Fase 2 (produção). Fora de produção não limitamos,
+  // para não travar o fluxo de dev/QA a cada novo login de teste.
+  if (process.env.NODE_ENV === "production" && activeDevices.length >= MAX_DEVICES) {
     return { ok: false, error: "device_limit" };
   }
 

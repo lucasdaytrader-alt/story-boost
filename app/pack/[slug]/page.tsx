@@ -17,6 +17,10 @@ import { BottomNav } from "@/components/story-boost/BottomNav";
 import { Badge } from "@/components/ui/Badge";
 import { timeAgo } from "@/lib/boost-engine/utils/time";
 
+// Página autenticada com dados por usuário — nunca deve ser prerenderizada
+// estaticamente no build (precisa da sessão/cookie de cada request).
+export const dynamic = "force-dynamic";
+
 function BackLink() {
   return (
     <div className="sticky top-0 z-20 bg-paper/90 backdrop-blur-md">

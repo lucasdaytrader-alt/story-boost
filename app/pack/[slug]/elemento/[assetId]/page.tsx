@@ -7,6 +7,10 @@ import { UseInStoryButton } from "@/components/story-boost/UseInStoryButton";
 import { ShareIconButton } from "@/components/story-boost/ShareIconButton";
 import { IconButton } from "@/components/ui/IconButton";
 
+// Página autenticada com dados por usuário — nunca deve ser prerenderizada
+// estaticamente no build (precisa da sessão/cookie de cada request).
+export const dynamic = "force-dynamic";
+
 export default async function ElementPreviewPage({
   params,
 }: {

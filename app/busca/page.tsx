@@ -10,6 +10,10 @@ import { Chip } from "@/components/ui/Chip";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 
+// Página autenticada com dados por usuário — nunca deve ser prerenderizada
+// estaticamente no build (precisa da sessão/cookie de cada request).
+export const dynamic = "force-dynamic";
+
 const SUGGESTIONS = ["cafeteria", "black friday", "fitness", "imóveis", "frases", "natal"];
 
 export default async function BuscaPage({

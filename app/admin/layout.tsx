@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { requireAdmin } from "@/lib/boost-engine/services/auth";
 
+// Toda a área /admin/* é autenticada e consulta o banco por request — nunca
+// deve ser prerenderizada estaticamente no build.
+export const dynamic = "force-dynamic";
+
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const admin = await requireAdmin();
 

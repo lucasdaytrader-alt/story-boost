@@ -6,6 +6,10 @@ import { BottomNav } from "@/components/story-boost/BottomNav";
 import { Badge } from "@/components/ui/Badge";
 import { FormSubmitButton } from "@/components/ui/FormSubmitButton";
 
+// Página autenticada com dados por usuário — nunca deve ser prerenderizada
+// estaticamente no build (precisa da sessão/cookie de cada request).
+export const dynamic = "force-dynamic";
+
 function initials(name: string) {
   return name.split(" ").slice(0, 2).map((p) => p[0]).join("").toUpperCase();
 }

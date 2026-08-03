@@ -14,6 +14,10 @@ import { PackCarouselSection } from "@/components/story-boost/PackCarouselSectio
 import { AllPacksGrid } from "@/components/story-boost/AllPacksGrid";
 import { BottomNav } from "@/components/story-boost/BottomNav";
 
+// Página autenticada com dados por usuário — nunca deve ser prerenderizada
+// estaticamente no build (precisa da sessão/cookie de cada request).
+export const dynamic = "force-dynamic";
+
 export default async function HomePage({
   searchParams,
 }: {

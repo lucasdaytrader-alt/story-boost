@@ -4,6 +4,10 @@ import { Header } from "@/components/story-boost/Header";
 import { CategoryTile } from "@/components/story-boost/CategoryTile";
 import { BottomNav } from "@/components/story-boost/BottomNav";
 
+// Página autenticada com dados por usuário — nunca deve ser prerenderizada
+// estaticamente no build (precisa da sessão/cookie de cada request).
+export const dynamic = "force-dynamic";
+
 export default async function CategoriasPage() {
   const product = await getProductBySlug("story-boost");
   if (!product) return null;

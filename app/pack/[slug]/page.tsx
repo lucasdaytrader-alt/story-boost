@@ -13,6 +13,7 @@ import { PackFilterChips } from "@/components/story-boost/PackFilterChips";
 import { ElementsGrid } from "@/components/story-boost/ElementsGrid";
 import { PackCarouselSection } from "@/components/story-boost/PackCarouselSection";
 import { PackPaywall } from "@/components/story-boost/PackPaywall";
+import { PackCoverArt } from "@/components/story-boost/PackCoverArt";
 import { BottomNav } from "@/components/story-boost/BottomNav";
 import { Badge } from "@/components/ui/Badge";
 import { BrandStripe } from "@/components/ui/BrandStripe";
@@ -89,7 +90,6 @@ export default async function PackDetailPage({
           packId={pack.id}
           packName={packTitle}
           priceCents={pack.priceCents!}
-          coverUrl={pack.coverUrl}
         />
         <BottomNav />
       </div>
@@ -109,7 +109,7 @@ export default async function PackDetailPage({
 
       <div className="px-4 pb-3">
         <div className="shadow-elevation-2 relative mb-3.5 h-36 w-full overflow-hidden rounded-3xl">
-          <img src={pack.coverUrl} alt={packTitle} className="h-full w-full object-cover" />
+          <PackCoverArt name={pack.name} className="h-full w-full" />
           <div className="absolute right-3 top-3 flex gap-2">
             {pack.isPremium ? (
               <Badge variant="price">R$ {(pack.priceCents! / 100).toFixed(2).replace(".", ",")}</Badge>

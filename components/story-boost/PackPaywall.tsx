@@ -1,21 +1,20 @@
 import { purchasePackAction } from "@/app/pack/actions";
+import { PackCoverArt } from "./PackCoverArt";
 import { FormSubmitButton } from "@/components/ui/FormSubmitButton";
 
 export function PackPaywall({
   packId,
   packName,
   priceCents,
-  coverUrl,
 }: {
   packId: string;
   packName: string;
   priceCents: number;
-  coverUrl: string;
 }) {
   return (
     <div className="px-4 pb-10">
       <div className="shadow-elevation-2 relative overflow-hidden rounded-3xl">
-        <img src={coverUrl} alt={packName} className="h-60 w-full object-cover blur-md brightness-[0.55]" />
+        <PackCoverArt name={packName} className="h-60 w-full blur-md brightness-[0.55]" />
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center">
           <span className="shadow-elevation-1 grid h-12 w-12 place-items-center rounded-full bg-white/95 text-ink">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">

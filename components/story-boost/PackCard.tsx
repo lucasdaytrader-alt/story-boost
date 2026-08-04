@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/Badge";
+import { PackCoverArt } from "./PackCoverArt";
 import { toTitleCase } from "@/lib/boost-engine/utils/text";
 
 type PackCardData = {
@@ -44,10 +45,10 @@ export function PackCard({
       href={`/pack/${pack.slug}`}
       className={`focus-ring-dark transition-premium hover-lift group block overflow-hidden rounded-3xl bg-card p-2 shadow-elevation-1 ring-1 ring-white/10 active:scale-[0.98] hover:shadow-glow-brand hover:ring-white/25 ${wrapClasses}`}
     >
-      {/* A capa fica limpa — sem texto sobreposto, sem véu escuro — pra imagem
-          representar o tema por conta própria. O título oficial vai abaixo. */}
+      {/* Capa conceitual (ícone + gradiente por tema) — nunca a primeira
+          figurinha do pack. O título oficial vai abaixo, fora da arte. */}
       <div className={`relative overflow-hidden rounded-2xl ${imageClasses}`}>
-        <img src={pack.coverUrl} alt={title} className="cover-zoom h-full w-full object-cover" />
+        <PackCoverArt name={pack.name} className="cover-zoom h-full w-full" />
 
         {pack.isPremium ? (
           <Badge variant="price" className="absolute right-2.5 top-2.5">

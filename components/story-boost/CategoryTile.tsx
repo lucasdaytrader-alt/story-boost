@@ -35,8 +35,8 @@ export function CategoryTile({
       href={`/?categoria=${category.slug}`}
       className={
         vivid
-          ? "focus-ring-dark transition-premium group relative block aspect-square overflow-hidden rounded-3xl ring-1 ring-white/10 active:scale-[0.97] hover:ring-white/20"
-          : "focus-ring-dark transition-premium group block overflow-hidden rounded-3xl bg-card p-2 shadow-elevation-1 active:scale-[0.98] hover:shadow-elevation-2"
+          ? "focus-ring-dark transition-premium hover-lift group relative block aspect-square overflow-hidden rounded-3xl ring-1 ring-white/10 active:scale-[0.97] hover:ring-white/20"
+          : "focus-ring-dark transition-premium hover-lift group block overflow-hidden rounded-3xl bg-card p-2 shadow-elevation-1 active:scale-[0.98] hover:shadow-elevation-2"
       }
     >
       {vivid ? (
@@ -45,13 +45,13 @@ export function CategoryTile({
             <img
               src={category.coverUrl}
               alt=""
-              className="h-full w-full scale-110 object-cover opacity-70 grayscale contrast-125 transition-transform duration-300 group-hover:scale-125"
+              className="h-full w-full scale-110 object-cover opacity-70 grayscale contrast-125 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.16]"
             />
           ) : (
             <div className="h-full w-full bg-card" />
           )}
           <div className={`absolute inset-0 mix-blend-color ${VIVID_ACCENTS[accentIndex % VIVID_ACCENTS.length]}`} />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+          <div className="cover-overlay absolute inset-0" />
           <span className="glass-dark absolute left-3 top-3 grid h-8 w-8 place-items-center rounded-full text-[15px]">
             {categoryIcon(category.name)}
           </span>
@@ -67,15 +67,11 @@ export function CategoryTile({
       ) : (
         <div className="relative aspect-[4/5] overflow-hidden rounded-2xl">
           {category.coverUrl ? (
-            <img
-              src={category.coverUrl}
-              alt={category.name}
-              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-            />
+            <img src={category.coverUrl} alt={category.name} className="cover-zoom h-full w-full object-cover" />
           ) : (
             <div className="h-full w-full bg-mist" />
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent" />
+          <div className="cover-overlay absolute inset-0" />
           <div className="absolute inset-x-0 bottom-0 p-3.5">
             <p className="font-display text-[16px] font-bold leading-tight text-white">{category.name}</p>
             <p className="mt-0.5 text-[12px] text-white/75">

@@ -1,4 +1,5 @@
 import { ElementCard } from "./ElementCard";
+import { CatalogGrid } from "./CatalogGrid";
 import { EmptyState } from "@/components/ui/EmptyState";
 
 type Element = React.ComponentProps<typeof ElementCard>["element"];
@@ -21,10 +22,10 @@ export function ElementsGrid({
   }
 
   return (
-    <div className="grid grid-cols-2 gap-3">
-      {elements.map((el) => (
-        <ElementCard key={el.id} element={el} packSlug={packSlug} />
-      ))}
-    </div>
+    <CatalogGrid
+      items={elements}
+      keyFor={(el) => el.id}
+      renderItem={(el) => <ElementCard element={el} packSlug={packSlug} />}
+    />
   );
 }

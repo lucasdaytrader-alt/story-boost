@@ -15,6 +15,7 @@ import { PackCarouselSection } from "@/components/story-boost/PackCarouselSectio
 import { PackPaywall } from "@/components/story-boost/PackPaywall";
 import { BottomNav } from "@/components/story-boost/BottomNav";
 import { Badge } from "@/components/ui/Badge";
+import { BrandStripe } from "@/components/ui/BrandStripe";
 import { timeAgo } from "@/lib/boost-engine/utils/time";
 
 // Página autenticada com dados por usuário — nunca deve ser prerenderizada
@@ -24,7 +25,7 @@ export const dynamic = "force-dynamic";
 function BackLink() {
   return (
     <div className="sticky top-0 z-20 bg-paper/90 backdrop-blur-md">
-      <div className="h-[3px] w-full brand-gradient" />
+      <BrandStripe />
       <div className="flex items-center gap-2 px-2 py-2">
         <Link
           href="/"
@@ -75,7 +76,7 @@ export default async function PackDetailPage({
 
   if (!access) {
     return (
-      <div className="mx-auto flex min-h-screen max-w-md flex-col bg-paper">
+      <div className="mx-auto flex min-h-screen max-w-md flex-col bg-paper sm:max-w-2xl lg:max-w-5xl xl:max-w-6xl">
         <BackLink />
         <div className="px-4 pb-1 pt-2">
           <h1 className="font-display text-xl font-bold text-ink">{pack.name}</h1>
@@ -100,13 +101,13 @@ export default async function PackDetailPage({
   const empty = EMPTY_STATE[filter];
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-md flex-col bg-paper">
+    <div className="mx-auto flex min-h-screen max-w-md flex-col bg-paper sm:max-w-2xl lg:max-w-5xl xl:max-w-6xl">
       <BackLink />
 
       <div className="px-4 pb-3">
         <div className="shadow-elevation-2 relative mb-3.5 h-36 w-full overflow-hidden rounded-3xl">
           <img src={pack.coverUrl} alt={pack.name} className="h-full w-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" />
+          <div className="cover-overlay absolute inset-0" />
           <div className="absolute right-3 top-3 flex gap-2">
             {pack.isPremium ? (
               <Badge variant="price">R$ {(pack.priceCents! / 100).toFixed(2).replace(".", ",")}</Badge>

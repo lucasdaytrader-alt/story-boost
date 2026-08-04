@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { IconButton } from "@/components/ui/IconButton";
+import { BrandStripe } from "@/components/ui/BrandStripe";
 
 function initials(name: string) {
   return name
@@ -23,15 +24,10 @@ export function Header({
 
   return (
     <header className={`sticky top-0 z-20 ${dark ? "glass-dark" : "bg-paper/90 backdrop-blur-md"}`}>
-      {!dark && (
-        <>
-          {/* assinatura visual da marca — filete de gradiente */}
-          <div className="h-[3px] w-full brand-gradient" />
-        </>
-      )}
+      {!dark && <BrandStripe />}
       <div className="flex items-center justify-between px-4 py-3">
         <Link href="/" className="focus-ring flex items-center gap-2 rounded-lg">
-          <span className="grid h-7 w-7 place-items-center rounded-lg brand-gradient text-xs font-bold text-white shadow-elevation-1">
+          <span className="grid h-7 w-7 place-items-center rounded-xl brand-gradient text-xs font-bold text-white shadow-elevation-1">
             SB
           </span>
           <span className={`font-display text-[17px] font-extrabold tracking-tight ${dark ? "text-white" : "text-ink"}`}>

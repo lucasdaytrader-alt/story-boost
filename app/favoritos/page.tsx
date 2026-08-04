@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/boost-engine/services/users";
 import { Header } from "@/components/story-boost/Header";
 import { ElementsGrid } from "@/components/story-boost/ElementsGrid";
 import { BottomNav } from "@/components/story-boost/BottomNav";
+import { PageHeading } from "@/components/ui/PageHeading";
 
 // Página autenticada com dados por usuário — nunca deve ser prerenderizada
 // estaticamente no build (precisa da sessão/cookie de cada request).
@@ -16,15 +17,13 @@ export default async function FavoritosPage() {
   const elements = await getFavoritedAssets(user.id, product.id);
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-md flex-col bg-paper">
+    <div className="mx-auto flex min-h-screen max-w-md flex-col bg-paper sm:max-w-2xl lg:max-w-5xl xl:max-w-6xl">
       <Header userName={user.name} isAdmin={user.isAdmin} />
 
-      <div className="px-4 pb-2 pt-3">
-        <h1 className="font-display text-xl font-bold text-ink">Favoritos</h1>
-        <p className="text-sm text-muted">
-          {elements.length} {elements.length === 1 ? "elemento salvo" : "elementos salvos"}
-        </p>
-      </div>
+      <PageHeading
+        title="Favoritos"
+        subtitle={`${elements.length} ${elements.length === 1 ? "elemento salvo" : "elementos salvos"}`}
+      />
 
       <section className="px-4 pb-28 pt-2">
         <ElementsGrid

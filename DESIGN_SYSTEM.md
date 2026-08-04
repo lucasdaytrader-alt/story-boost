@@ -70,7 +70,7 @@ produto:
 | Camada | Classe | Uso |
 |---|---|---|
 | Pílula | `rounded-full` | chips, badges, avatar, botões de ícone |
-| Controle | `rounded-xl` (12px) | inputs, botões, chips de filtro |
+| Controle | `rounded-xl` (12px) | inputs, botões, chips de filtro, badge do logo (Header/login) |
 | Card padrão | `rounded-2xl` (16px) | ElementCard, banners |
 | Card premium | `rounded-3xl` (24px) | PackCard, CategoryTile, paywall, login card |
 
@@ -94,8 +94,18 @@ Três níveis, como utilitários (`app/globals.css`) — substituem qualquer
 - **Feedback de toque**: todo elemento tocável tem `active:scale-95` (ícones)
   ou `active:scale-[0.98]` (cards) — resposta tátil imediata, como
   Spotify/Notion.
-- **`prefers-reduced-motion: reduce`** desliga shimmer e transições —
-  acessibilidade não é opcional num produto "premium".
+- **`.cover-zoom`** — zoom único (scale 1.06) da imagem de capa no hover do
+  cartão pai (`.group`). Usado por `PackCard`, `CategoryTile` (modo padrão) e
+  `ElementCard` — antes cada um tinha sua própria magnitude (103/105/125%).
+- **`.hover-lift`** — sobe 3px (`translateY`) só em telas com mouse
+  (`hover: hover` + `pointer: fine`), nunca gruda em toque. Aplicado junto
+  com `.transition-premium` em todo cartão de catálogo.
+- **`.card-enter`** — entrada em cascata (fade + leve subida, 420ms) dos itens
+  de um `CatalogGrid`, com atraso por `--stagger-index` (máx. 12 passos de
+  40ms, pra não acumular atraso em listas grandes).
+- **`prefers-reduced-motion: reduce`** desliga shimmer, `cover-zoom`,
+  `hover-lift` e `card-enter` — acessibilidade não é opcional num produto
+  "premium".
 
 ## Estados
 
@@ -111,11 +121,11 @@ Três níveis, como utilitários (`app/globals.css`) — substituem qualquer
 - **Empty**: `EmptyState` — ícone + título + mensagem, borda tracejada.
 - **Skeleton**: `.skeleton` (shimmer) + `Skeleton`/`PackCardSkeleton`/
   `CategoryCardSkeleton`/`ElementCardSkeleton`/`HeaderSkeleton` em
-  `components/ui/Skeleton.tsx` — prontos para uso, mas **não** conectados via
-  `loading.tsx` de rota: em `npm run dev` (Turbopack, Next 16.2.12) isso
-  causa um bug confirmado de conteúdo preso atrás de um Suspense boundary
-  escondido (funciona normalmente em `next build && next start`). Ver
-  memória do projeto / ROADMAP.md antes de reativar essa via.
+  `components/ui/Skeleton.tsx` — conectados via `loading.tsx` em toda rota de
+  conteúdo (`/`, `/categorias`, `/busca`, `/favoritos`, `/pack/[slug]`), então
+  nenhuma tela fica em branco enquanto os dados carregam (todas são
+  `force-dynamic`). `HeaderSkeleton` recebe `variant="light"|"dark"` espelhando
+  o `Header` real.
 
 ## Botões
 
@@ -149,11 +159,12 @@ chrome funcional da UI (ex.: o cadeado do paywall é SVG, não 🔒).
 
 ## Filete de marca
 
-A faixa `<div className="h-[3px] w-full brand-gradient" />` aparece no topo
-de **toda** tela, não só nas que usam `Header` — replicada manualmente no
-topo de Login, do cabeçalho de Pack (`BackLink`) e do preview de Elemento.
-É a assinatura visual mínima que garante que nenhuma tela "esqueça" a marca,
-mesmo as que não usam o `Header` padrão.
+`components/ui/BrandStripe.tsx` aparece no topo de **toda** tela, não só nas
+que usam `Header` — também no topo de Login, do cabeçalho de Pack
+(`BackLink`) e do preview de Elemento (antes era um `<div>` replicado
+manualmente em cada um desses lugares). É a assinatura visual mínima que
+garante que nenhuma tela "esqueça" a marca, mesmo as que não usam o `Header`
+padrão.
 
 ## Bottom sheet
 
@@ -166,24 +177,67 @@ sensação de app nativo.
 
 Primitivo `components/ui/Badge.tsx` — `price`, `free`, `new`, `outline`,
 `solid-dark`. Substitui os `<span>` de preço/grátis/novo/categoria que
-antes eram estilizados manualmente em cada card.
+antes eram estilizados manualmente em cada card. As três variantes de
+catálogo são deliberadamente inconfundíveis entre si:
+
+| Variante | Estilo | Significa |
+|---|---|---|
+| `price` | sólido `sun` | pack premium — sinaliza valor |
+| `free` | pill de vidro (`bg-white/15` + `backdrop-blur`) | grátis |
+| `new` | sólido `ultra` | elemento novo no catálogo |
+
+(Antes `price` e `new` usavam a mesma cor `sun` e eram indistinguíveis.)
 
 ## Componentes de layout
 
 - **`SectionHeader`** — título + subtítulo ou link de ação. Usado em todo
   bloco "Em destaque / Navegue por nicho / Todos os packs / Elementos".
+- **`PageHeading`** — título + subtítulo de página (Categorias, Favoritos) —
+  antes copiado manualmente em cada `page.tsx`.
+- **`BrandStripe`** — o filete de gradiente do topo (ver seção "Filete de
+  marca" abaixo), agora um componente em vez de `<div>` replicado.
+- **`CatalogGrid`** — grid único do catálogo (ver seção acima).
 - **`EmptyState`** — mesmo padrão visual para "nada aqui" em qualquer lista.
 - **`Skeleton`, `PackCardSkeleton`, `CategoryCardSkeleton`,
   `ElementCardSkeleton`, `HeaderSkeleton`** — compõem os `loading.tsx`.
 
-## Cards de conteúdo (packs e categorias)
+## Cards de conteúdo (packs, categorias e elementos)
 
-Linguagem única: moldura escura (`bg-card`, `p-2`, `rounded-3xl`) com a
-imagem inserida (`rounded-2xl`) e badge sobreposto. Título/metadado ficam
-dentro da moldura escura (packs, texto abaixo da imagem) ou sobre a própria
-imagem com gradiente (categorias, banner do pack). A regra: **a imagem é
-sempre protagonista dentro de um cartão que parece objeto físico** (sombra,
+Linguagem única: moldura escura (`bg-card`, `p-2` ou `ring-1 ring-white/10`)
+com a imagem inserida (`rounded-2xl`) e badge sobreposto. Título/metadado
+ficam sobrepostos à própria imagem, ancorados embaixo, sobre `.cover-overlay`
+(gradiente de 2 stops que garante contraste em qualquer foto) — nunca abaixo
+da imagem como bloco de texto solto. A regra: **a imagem é sempre
+protagonista dentro de um cartão que parece objeto físico** (sombra,
 profundidade), não uma foto solta na tela.
+
+`CategoryTile` tem duas variantes propositais, não uma deriva acidental:
+**vivid** (duotone colorido + ícone, só na Home — momento editorial de
+"gênero", como os tiles do Spotify) e **standard** (a mesma moldura escura de
+`PackCard`, usada em `/categorias` e em qualquer listagem prática). Ambas
+usam `.cover-overlay`/`.cover-zoom`/`.hover-lift`.
+
+`ElementCard` (adesivo individual) segue a mesma moldura escura, um nível
+abaixo na hierarquia de raio (`rounded-2xl`, não `rounded-3xl` — é um item
+dentro de um pack, não uma coleção) e sem overlay de texto, já que a imagem
+ali não carrega título sobreposto.
+
+## Grid do catálogo e responsividade
+
+Todo grid de 2 colunas (packs, categorias, elementos) usa o mesmo componente,
+`components/story-boost/CatalogGrid.tsx` — substitui as 3 implementações
+divergentes que existiam antes (`grid` vs `columns`, `gap-3` vs `gap-3.5`).
+Cresce em colunas conforme a tela aumenta (`grid-cols-2` → `sm:3` → `lg:4` →
+`xl:5`, ou o equivalente em `columns-*` no modo `masonry`), então o layout
+não muda com 20, 200 ou 2.000 itens — só quanto cabe por linha. Cada item
+entra com `.card-enter` (stagger automático via índice).
+
+As páginas de biblioteca (`/`, `/categorias`, `/busca`, `/favoritos`,
+`/pack/[slug]`) usam a mesma largura progressiva de shell:
+`max-w-md sm:max-w-2xl lg:max-w-5xl xl:max-w-6xl` — em mobile continua a
+mesma coluna única de sempre; em tablet/desktop o conteúdo ganha espaço em
+vez de flutuar como uma coluna estreita no meio da tela. `BottomNav`
+continua mobile-first (não há sidebar de desktop nesta sprint).
 
 ## O que ficou fora desta sprint (ver ROADMAP.md)
 

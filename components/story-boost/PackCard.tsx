@@ -34,20 +34,19 @@ export function PackCard({
         : "w-[19rem] shrink-0"
       : "w-full";
   const imageClasses =
-    variant === "carousel" ? (size === "lg" ? "h-72" : "h-56") : GRID_ASPECTS[index % GRID_ASPECTS.length];
+    variant === "carousel" ? (size === "lg" ? "h-72" : "h-64") : GRID_ASPECTS[index % GRID_ASPECTS.length];
 
   return (
     <Link
       href={`/pack/${pack.slug}`}
-      className={`focus-ring-dark transition-premium group block overflow-hidden rounded-3xl bg-card p-2 shadow-elevation-1 ring-1 ring-white/10 active:scale-[0.98] hover:shadow-elevation-2 hover:ring-white/20 ${wrapClasses}`}
+      className={`focus-ring-dark transition-premium hover-lift group block overflow-hidden rounded-3xl bg-card p-2 shadow-elevation-1 ring-1 ring-white/10 active:scale-[0.98] hover:shadow-glow-brand hover:ring-white/25 ${wrapClasses}`}
     >
       <div className={`relative overflow-hidden rounded-2xl ${imageClasses}`}>
-        <img
-          src={pack.coverUrl}
-          alt={pack.name}
-          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
+        <img src={pack.coverUrl} alt={pack.name} className="cover-zoom h-full w-full object-cover" />
+
+        {/* véu roxo sutil no topo — profundidade "premium" sem colorir a foto */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-ultra/25 via-transparent to-transparent" />
+        <div className="cover-overlay pointer-events-none absolute inset-0" />
 
         {pack.isPremium ? (
           <Badge variant="price" className="absolute right-2.5 top-2.5">
@@ -58,20 +57,20 @@ export function PackCard({
             Grátis
           </Badge>
         )}
-      </div>
 
-      <div className="px-1.5 pb-1.5 pt-3">
-        <p
-          className={[
-            "font-display font-bold leading-tight text-white line-clamp-1",
-            size === "lg" ? "text-[19px] font-extrabold" : "text-[15px]",
-          ].join(" ")}
-        >
-          {pack.name}
-        </p>
-        <p className={`mt-1 text-white/55 ${size === "lg" ? "text-[13px]" : "text-[12px]"}`}>
-          {pack.assetCount} elementos{pack.categoryName ? ` · ${pack.categoryName}` : ""}
-        </p>
+        <div className="absolute inset-x-0 bottom-0 p-3.5">
+          <p
+            className={[
+              "font-display font-bold leading-tight text-white line-clamp-1",
+              size === "lg" ? "text-[19px] font-extrabold" : "text-[17px]",
+            ].join(" ")}
+          >
+            {pack.name}
+          </p>
+          <p className={`mt-1 text-white/60 ${size === "lg" ? "text-[13px]" : "text-[12.5px]"}`}>
+            {pack.assetCount} elementos{pack.categoryName ? ` · ${pack.categoryName}` : ""}
+          </p>
+        </div>
       </div>
     </Link>
   );

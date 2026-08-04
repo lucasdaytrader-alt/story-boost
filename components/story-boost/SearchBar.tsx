@@ -26,7 +26,7 @@ export function SearchBar({
     <form onSubmit={handleSubmit} className={className || "px-4 pb-3 pt-2"}>
       <div
         className={[
-          "transition-premium flex items-center gap-2 rounded-2xl border px-4 py-3.5",
+          "transition-premium flex items-center gap-2 rounded-xl border px-4 py-3.5",
           dark
             ? "glass-dark border-white/10 focus-within:border-white/25 focus-within:ring-2 focus-within:ring-white/20"
             : "border-transparent bg-mist hover:border-line focus-within:border-transparent focus-within:bg-white focus-within:shadow-elevation-1 focus-within:ring-2 focus-within:ring-flame/40",

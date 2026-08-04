@@ -51,7 +51,7 @@ export default async function HomePage({
   });
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-md flex-col bg-ink">
+    <div className="mx-auto flex min-h-screen max-w-md flex-col bg-ink sm:max-w-2xl lg:max-w-5xl xl:max-w-6xl">
       <Header userName={user.name} isAdmin={user.isAdmin} variant="dark" />
 
       <Hero packCount={stats.packCount} assetCount={stats.assetCount} />

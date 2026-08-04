@@ -25,14 +25,10 @@ export function ElementCard({
   const previewHref = effectiveSlug ? `/pack/${effectiveSlug}/elemento/${element.id}` : undefined;
 
   return (
-    <div className="transition-premium group relative overflow-hidden rounded-2xl border border-line bg-mist hover:border-ink/10 hover:shadow-elevation-2">
+    <div className="transition-premium hover-lift group relative overflow-hidden rounded-2xl bg-card ring-1 ring-white/10 hover:shadow-elevation-2 hover:ring-white/20">
       {previewHref ? (
-        <Link href={previewHref} className="focus-ring block aspect-[0.85] w-full">
-          <img
-            src={element.previewUrl}
-            alt={element.name}
-            className="transition-premium h-full w-full object-cover group-hover:scale-[1.03]"
-          />
+        <Link href={previewHref} className="focus-ring-dark block aspect-[0.85] w-full">
+          <img src={element.previewUrl} alt={element.name} className="cover-zoom h-full w-full object-cover" />
         </Link>
       ) : (
         <div className="aspect-[0.85] w-full">

@@ -1,4 +1,5 @@
 import { CategoryTile } from "./CategoryTile";
+import { CatalogGrid } from "./CatalogGrid";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 
 type CategoryPreview = React.ComponentProps<typeof CategoryTile>["category"];
@@ -13,11 +14,11 @@ export function CategoryShowcase({ categories }: { categories: CategoryPreview[]
         title="Navegue por nicho"
         action={{ label: "Ver todas", href: "/categorias" }}
       />
-      <div className="grid grid-cols-2 gap-3.5">
-        {categories.map((c, i) => (
-          <CategoryTile key={c.id} category={c} accentIndex={i} />
-        ))}
-      </div>
+      <CatalogGrid
+        items={categories}
+        keyFor={(c) => c.id}
+        renderItem={(c, i) => <CategoryTile category={c} accentIndex={i} />}
+      />
     </section>
   );
 }

@@ -21,7 +21,7 @@ export function SectionHeader({
         <Link
           href={action.href}
           className={[
-            "focus-ring rounded-md text-[13px] font-semibold transition-colors",
+            "focus-ring rounded-xl text-[13px] font-semibold transition-colors",
             dark ? "text-white/70 hover:text-white" : "text-ultra hover:text-flame",
           ].join(" ")}
         >

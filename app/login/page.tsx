@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react";
 import { signInAction, signUpAction, type AuthActionState } from "./actions";
 import { Button } from "@/components/ui/Button";
+import { BrandStripe } from "@/components/ui/BrandStripe";
 
 export default function LoginPage() {
   const [mode, setMode] = useState<"entrar" | "cadastrar">("entrar");
@@ -21,9 +22,9 @@ export default function LoginPage() {
 
   return (
     <div className="hero-wash relative mx-auto flex min-h-screen max-w-md flex-col justify-center bg-paper px-6 py-10">
-      <div className="absolute inset-x-0 top-0 h-[3px] brand-gradient" />
+      <BrandStripe className="absolute inset-x-0 top-0" />
       <div className="mb-7 text-center">
-        <span className="shadow-glow-brand mx-auto mb-3 grid h-14 w-14 place-items-center rounded-2xl brand-gradient text-xl font-bold text-white">
+        <span className="shadow-glow-brand mx-auto mb-3 grid h-14 w-14 place-items-center rounded-xl brand-gradient text-xl font-bold text-white">
           SB
         </span>
         <h1 className="font-display text-[26px] font-extrabold tracking-tight text-ink">Story Boost</h1>

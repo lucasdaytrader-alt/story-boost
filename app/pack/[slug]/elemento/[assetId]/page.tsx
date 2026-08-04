@@ -6,6 +6,7 @@ import { FavoriteButton } from "@/components/story-boost/FavoriteButton";
 import { UseInStoryButton } from "@/components/story-boost/UseInStoryButton";
 import { ShareIconButton } from "@/components/story-boost/ShareIconButton";
 import { IconButton } from "@/components/ui/IconButton";
+import { BrandStripe } from "@/components/ui/BrandStripe";
 
 // Página autenticada com dados por usuário — nunca deve ser prerenderizada
 // estaticamente no build (precisa da sessão/cookie de cada request).
@@ -36,7 +37,7 @@ export default async function ElementPreviewPage({
 
   return (
     <div className="mx-auto flex min-h-screen max-w-md flex-col bg-ink/95">
-      <div className="h-[3px] w-full brand-gradient" />
+      <BrandStripe />
       <div className="flex items-center justify-between px-4 py-3">
         <IconButton href={`/pack/${slug}`} variant="dark" aria-label="Fechar">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">

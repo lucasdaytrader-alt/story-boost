@@ -1,4 +1,5 @@
 import { PackCard } from "./PackCard";
+import { CatalogGrid } from "./CatalogGrid";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
 
@@ -27,11 +28,12 @@ export function AllPacksGrid({
           message="Novos packs chegam toda semana — volte em breve."
         />
       ) : (
-        <div className="columns-2 gap-3.5 [&>*]:mb-3.5 [&>*]:break-inside-avoid">
-          {packs.map((p, i) => (
-            <PackCard key={p.id} pack={p} variant="grid" index={i} />
-          ))}
-        </div>
+        <CatalogGrid
+          variant="masonry"
+          items={packs}
+          keyFor={(p) => p.id}
+          renderItem={(p, i) => <PackCard pack={p} variant="grid" index={i} />}
+        />
       )}
     </section>
   );

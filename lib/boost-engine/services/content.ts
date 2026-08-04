@@ -9,7 +9,7 @@
  * elementos PNG para Stories — o pack é a unidade central de navegação.
  */
 
-import { and, desc, eq, like, or, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, like, notInArray, or, sql } from "drizzle-orm";
 import { db } from "../db/client";
 import {
   assetTags,
@@ -70,11 +70,12 @@ const packCardSelection = {
   coverUrl: packs.coverUrl,
   isPremium: packs.isPremium,
   priceCents: packs.priceCents,
+  categoryId: packs.categoryId,
   categoryName: categories.name,
   assetCount: sql<number>`(select count(*) from ${packAssets} where ${packAssets.packId} = ${packs.id})`,
 };
 
-/** Packs marcados como destaque pelo CMS (campo isFeatured) — carrossel curado. */
+/** Packs marcados como destaque pelo CMS (campo isFeatured) — carrossel "Em alta". */
 export async function getFeaturedPacks(productId: string) {
   return db
     .select(packCardSelection)
@@ -82,6 +83,123 @@ export async function getFeaturedPacks(productId: string) {
     .leftJoin(categories, eq(packs.categoryId, categories.id))
     .where(and(eq(packs.productId, productId), eq(packs.isFeatured, true)))
     .orderBy(desc(packs.createdAt));
+}
+
+/** Packs mais recentes — carrossel "Novidades" da Home. */
+export async function getNewPacks(productId: string, limit = 15) {
+  return db
+    .select(packCardSelection)
+    .from(packs)
+    .leftJoin(categories, eq(packs.categoryId, categories.id))
+    .where(eq(packs.productId, productId))
+    .orderBy(desc(packs.createdAt))
+    .limit(limit);
+}
+
+/** Packs premium — carrossel "Premium" da Home. */
+export async function getPremiumPacks(productId: string, limit = 15) {
+  return db
+    .select(packCardSelection)
+    .from(packs)
+    .leftJoin(categories, eq(packs.categoryId, categories.id))
+    .where(and(eq(packs.productId, productId), eq(packs.isPremium, true)))
+    .orderBy(desc(packs.createdAt))
+    .limit(limit);
+}
+
+/** Packs gratuitos — carrossel "Gratuitos" da Home. */
+export async function getFreePacks(productId: string, limit = 15) {
+  return db
+    .select(packCardSelection)
+    .from(packs)
+    .leftJoin(categories, eq(packs.categoryId, categories.id))
+    .where(and(eq(packs.productId, productId), eq(packs.isPremium, false)))
+    .orderBy(desc(packs.createdAt))
+    .limit(limit);
+}
+
+/**
+ * Packs ordenados pela soma de uso (usageCount) dos seus elementos — carrossel
+ * "Mais utilizados" da Home. Duas etapas: primeiro rankeia os IDs por uso
+ * agregado, depois busca os dados completos do card preservando a ordem.
+ */
+export async function getMostUsedPacks(productId: string, limit = 15) {
+  const ranked = await db
+    .select({
+      id: packs.id,
+      totalUsage: sql<number>`coalesce(sum(${digitalAssets.usageCount}), 0)`,
+    })
+    .from(packs)
+    .leftJoin(packAssets, eq(packAssets.packId, packs.id))
+    .leftJoin(digitalAssets, eq(digitalAssets.id, packAssets.assetId))
+    .where(eq(packs.productId, productId))
+    .groupBy(packs.id)
+    .orderBy(desc(sql`coalesce(sum(${digitalAssets.usageCount}), 0)`))
+    .limit(limit);
+
+  return hydratePackOrder(ranked.map((r) => r.id));
+}
+
+/** Packs com pelo menos um elemento favoritado pelo usuário — carrossel "Favoritos". */
+export async function getFavoritedPacksForUser(userId: string, productId: string, limit = 15) {
+  const ranked = await db
+    .select({
+      id: packs.id,
+      lastFavoritedAt: sql<number>`max(${favorites.createdAt})`,
+    })
+    .from(favorites)
+    .innerJoin(digitalAssets, eq(digitalAssets.id, favorites.assetId))
+    .innerJoin(packAssets, eq(packAssets.assetId, digitalAssets.id))
+    .innerJoin(packs, eq(packs.id, packAssets.packId))
+    .where(and(eq(favorites.userId, userId), eq(packs.productId, productId)))
+    .groupBy(packs.id)
+    .orderBy(desc(sql`max(${favorites.createdAt})`))
+    .limit(limit);
+
+  return hydratePackOrder(ranked.map((r) => r.id));
+}
+
+/**
+ * Heurística simples de recomendação: outros packs das mesmas categorias que
+ * o usuário já favoritou, excluindo os packs já vistos. Sem os sinais do
+ * usuário (`categoryIds` vazio), retorna lista vazia — a Home decide o
+ * fallback (ex: reaproveitar "Em alta").
+ */
+export async function getRecommendedPacks(
+  productId: string,
+  categoryIds: string[],
+  excludeIds: string[],
+  limit = 15
+) {
+  if (categoryIds.length === 0) return [];
+
+  return db
+    .select(packCardSelection)
+    .from(packs)
+    .leftJoin(categories, eq(packs.categoryId, categories.id))
+    .where(
+      and(
+        eq(packs.productId, productId),
+        inArray(packs.categoryId, categoryIds),
+        excludeIds.length > 0 ? notInArray(packs.id, excludeIds) : undefined
+      )
+    )
+    .orderBy(desc(packs.isFeatured), desc(packs.createdAt))
+    .limit(limit);
+}
+
+/** Busca os dados completos de cartão para uma lista de IDs, preservando a ordem dada. */
+async function hydratePackOrder(ids: string[]) {
+  if (ids.length === 0) return [];
+
+  const rows = await db
+    .select(packCardSelection)
+    .from(packs)
+    .leftJoin(categories, eq(packs.categoryId, categories.id))
+    .where(inArray(packs.id, ids));
+
+  const byId = new Map(rows.map((r) => [r.id, r]));
+  return ids.map((id) => byId.get(id)).filter((r): r is (typeof rows)[number] => r !== undefined);
 }
 
 /**

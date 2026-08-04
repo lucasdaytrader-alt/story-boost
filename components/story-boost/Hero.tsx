@@ -1,5 +1,8 @@
 import { SearchBar } from "./SearchBar";
 import { Button } from "@/components/ui/Button";
+import { Chip } from "@/components/ui/Chip";
+
+const SEARCH_EXAMPLES = ["Academia", "Promoção", "Vinhos", "Confeitaria", "Dentista", "Marketing"];
 
 export function Hero({
   packCount,
@@ -29,21 +32,34 @@ export function Hero({
           escolhe, baixa e posta em segundos.
         </p>
 
-        <div className="mt-5">
-          <Button href="/categorias" variant="primary" size="md">
-            Explorar packs
+        <div className="mt-5 flex flex-col gap-2.5 sm:flex-row">
+          <Button variant="primary" size="md" disabled title="Em breve">
+            <span aria-hidden>✨</span> Criar Story com IA
+          </Button>
+          <Button href="/categorias" variant="outline" size="md" className="border-white/20 text-white hover:border-white/40 hover:bg-white/10">
+            Explorar biblioteca
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
               <path d="M5 12h14M13 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </Button>
         </div>
+        <p className="mt-2 text-[11px] text-white/40">
+          Criar Story com IA chega em breve — por enquanto, explore a biblioteca.
+        </p>
       </div>
 
       <div className="relative mt-5">
-        <SearchBar variant="dark" />
+        <SearchBar variant="dark" size="lg" placeholder="O que você quer criar hoje?" />
+        <div className="no-scrollbar mt-3 flex gap-2 overflow-x-auto px-4">
+          {SEARCH_EXAMPLES.map((example) => (
+            <Chip key={example} href={`/busca?q=${encodeURIComponent(example)}`} variant="dark">
+              {example}
+            </Chip>
+          ))}
+        </div>
       </div>
 
-      <div className="relative mt-3 flex items-center gap-2 px-4">
+      <div className="relative mt-4 flex items-center gap-2 px-4">
         <Stat value={`${packCount}+`} label="packs" dotClass="bg-flame" />
         <Stat value={`${assetCount}+`} label="elementos" dotClass="bg-sun" />
       </div>

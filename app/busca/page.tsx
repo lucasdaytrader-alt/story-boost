@@ -39,7 +39,7 @@ export default async function BuscaPage({
   return (
     <div className="mx-auto flex min-h-screen max-w-md flex-col bg-paper sm:max-w-2xl lg:max-w-5xl xl:max-w-6xl">
       <Header userName={user.name} isAdmin={user.isAdmin} />
-      <SearchBar defaultValue={query} />
+      <SearchBar defaultValue={query} size="lg" className="px-4 pb-3 pt-4" />
 
       {!query && (
         <div className="px-4 pb-28 pt-3">

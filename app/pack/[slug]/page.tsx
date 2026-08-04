@@ -145,7 +145,7 @@ export default async function PackDetailPage({
       </section>
 
       <div className="pb-28">
-        <PackCarouselSection title="Você também vai gostar de" packs={relatedPacks} />
+        <PackCarouselSection title="✨ Você também vai gostar de" packs={relatedPacks} />
       </div>
 
       <BottomNav />

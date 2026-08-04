@@ -16,7 +16,7 @@ export function AllPacksGrid({
     <section className="px-4 pb-32 pt-8">
       <SectionHeader
         variant="dark"
-        title={activeCategoryName ? activeCategoryName : "Todos os packs"}
+        title={activeCategoryName ? activeCategoryName : "Biblioteca completa"}
         subtitle={`${packs.length} ${packs.length === 1 ? "pack" : "packs"}`}
       />
 

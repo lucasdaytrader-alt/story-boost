@@ -57,13 +57,9 @@ export function PackCard({
         </Badge>
       )}
 
-      {pack.isPremium ? (
+      {pack.isPremium && (
         <Badge variant="price" className="pointer-events-none absolute right-2.5 top-2.5">
           R$ {(pack.priceCents! / 100).toFixed(2).replace(".", ",")}
-        </Badge>
-      ) : (
-        <Badge variant="free" className="pointer-events-none absolute right-2.5 top-2.5">
-          Grátis
         </Badge>
       )}
 

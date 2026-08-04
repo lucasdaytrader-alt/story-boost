@@ -58,6 +58,10 @@ export default async function HomePage({
     categoryId: activeCategory?.id,
   });
 
+  // "Novo" já é o próprio título do carrossel de Novidades — o selo só diz
+  // algo relevante fora dali, onde um pack recente aparece misturado aos demais.
+  const newPackIds = new Set(newPacks.map((p) => p.id));
+
   return (
     <div className="mx-auto flex min-h-screen max-w-md flex-col bg-ink sm:max-w-2xl lg:max-w-5xl xl:max-w-6xl">
       <Header userName={user.name} isAdmin={user.isAdmin} variant="dark" />
@@ -69,7 +73,7 @@ export default async function HomePage({
       {!activeCategory && (
         <>
           <PackCarouselSection title="Em alta" packs={featuredPacks} variant="dark" size="lg" />
-          <PackCarouselSection title="Novidades" packs={newPacks} variant="dark" cardBadge="new" />
+          <PackCarouselSection title="Novidades" packs={newPacks} variant="dark" />
           <PackCarouselSection title="Premium" packs={premiumPacks} variant="dark" />
           <PackCarouselSection title="Mais utilizados" packs={mostUsedPacks} variant="dark" />
           <PackCarouselSection title="Favoritos" packs={favoritedPacks} variant="dark" />
@@ -77,7 +81,7 @@ export default async function HomePage({
         </>
       )}
 
-      <AllPacksGrid packs={packs} activeCategoryName={activeCategory?.name} />
+      <AllPacksGrid packs={packs} activeCategoryName={activeCategory?.name} newPackIds={newPackIds} />
 
       <BottomNav />
     </div>

@@ -8,9 +8,12 @@ type Pack = React.ComponentProps<typeof PackCard>["pack"];
 export function AllPacksGrid({
   packs,
   activeCategoryName,
+  newPackIds,
 }: {
   packs: Pack[];
   activeCategoryName?: string;
+  /** IDs em destaque no carrossel de Novidades — aqui, fora dali, o selo "novo" ainda diz algo novo. */
+  newPackIds?: Set<string>;
 }) {
   return (
     <section className="px-4 pb-32 pt-10">
@@ -32,7 +35,9 @@ export function AllPacksGrid({
           variant="masonry"
           items={packs}
           keyFor={(p) => p.id}
-          renderItem={(p, i) => <PackCard pack={p} variant="grid" index={i} />}
+          renderItem={(p, i) => (
+            <PackCard pack={p} variant="grid" index={i} badge={newPackIds?.has(p.id) ? "new" : undefined} />
+          )}
         />
       )}
     </section>

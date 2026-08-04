@@ -1,5 +1,5 @@
+import Link from "next/link";
 import { SearchBar } from "./SearchBar";
-import { Chip } from "@/components/ui/Chip";
 
 const SEARCH_EXAMPLES = ["Academia", "Promoção", "Vinhos", "Confeitaria", "Dentista", "Marketing"];
 
@@ -31,11 +31,16 @@ export function Hero({ userName }: { userName: string }) {
 
       <div className="relative mt-6">
         <SearchBar variant="dark" size="lg" placeholder="Buscar por nicho, ocasião, estilo…" />
-        <div className="no-scrollbar mt-3 flex gap-2 overflow-x-auto px-4">
+        <div className="no-scrollbar mt-3.5 flex items-center gap-2 overflow-x-auto px-4 text-[12.5px]">
+          <span className="shrink-0 text-white/35">Sugestões</span>
           {SEARCH_EXAMPLES.map((example) => (
-            <Chip key={example} href={`/busca?q=${encodeURIComponent(example)}`} variant="dark">
+            <Link
+              key={example}
+              href={`/busca?q=${encodeURIComponent(example)}`}
+              className="focus-ring-dark transition-premium shrink-0 whitespace-nowrap rounded font-medium text-white/55 before:mr-2 before:text-white/20 before:content-['·'] hover:text-white"
+            >
               {example}
-            </Chip>
+            </Link>
           ))}
         </div>
       </div>

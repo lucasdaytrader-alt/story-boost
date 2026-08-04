@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/Badge";
+import { toTitleCase } from "@/lib/boost-engine/utils/text";
 
 type PackCardData = {
   id: string;
@@ -36,17 +37,17 @@ export function PackCard({
   const imageClasses =
     variant === "carousel" ? (size === "lg" ? "h-72" : "h-64") : GRID_ASPECTS[index % GRID_ASPECTS.length];
 
+  const title = toTitleCase(pack.name);
+
   return (
     <Link
       href={`/pack/${pack.slug}`}
       className={`focus-ring-dark transition-premium hover-lift group block overflow-hidden rounded-3xl bg-card p-2 shadow-elevation-1 ring-1 ring-white/10 active:scale-[0.98] hover:shadow-glow-brand hover:ring-white/25 ${wrapClasses}`}
     >
+      {/* A capa fica limpa — sem texto sobreposto, sem véu escuro — pra imagem
+          representar o tema por conta própria. O título oficial vai abaixo. */}
       <div className={`relative overflow-hidden rounded-2xl ${imageClasses}`}>
-        <img src={pack.coverUrl} alt={pack.name} className="cover-zoom h-full w-full object-cover" />
-
-        {/* véu roxo sutil no topo — profundidade "premium" sem colorir a foto */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-ultra/25 via-transparent to-transparent" />
-        <div className="cover-overlay pointer-events-none absolute inset-0" />
+        <img src={pack.coverUrl} alt={title} className="cover-zoom h-full w-full object-cover" />
 
         {pack.isPremium ? (
           <Badge variant="price" className="absolute right-2.5 top-2.5">
@@ -57,20 +58,20 @@ export function PackCard({
             Grátis
           </Badge>
         )}
+      </div>
 
-        <div className="absolute inset-x-0 bottom-0 p-3.5">
-          <p
-            className={[
-              "font-display font-bold leading-tight text-white line-clamp-1",
-              size === "lg" ? "text-[19px] font-extrabold" : "text-[17px]",
-            ].join(" ")}
-          >
-            {pack.name}
-          </p>
-          <p className={`mt-1 text-white/60 ${size === "lg" ? "text-[13px]" : "text-[12.5px]"}`}>
-            {pack.assetCount} elementos{pack.categoryName ? ` · ${pack.categoryName}` : ""}
-          </p>
-        </div>
+      <div className="px-1.5 pb-1.5 pt-3">
+        <p
+          className={[
+            "font-display font-bold leading-tight text-white line-clamp-1",
+            size === "lg" ? "text-[19px] font-extrabold" : "text-[16px]",
+          ].join(" ")}
+        >
+          {title}
+        </p>
+        <p className={`mt-1 text-white/55 ${size === "lg" ? "text-[13px]" : "text-[12.5px]"}`}>
+          {pack.assetCount} elementos{pack.categoryName ? ` · ${pack.categoryName}` : ""}
+        </p>
       </div>
     </Link>
   );

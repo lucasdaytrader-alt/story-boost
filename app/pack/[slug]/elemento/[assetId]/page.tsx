@@ -7,6 +7,7 @@ import { UseInStoryButton } from "@/components/story-boost/UseInStoryButton";
 import { ShareIconButton } from "@/components/story-boost/ShareIconButton";
 import { IconButton } from "@/components/ui/IconButton";
 import { BrandStripe } from "@/components/ui/BrandStripe";
+import { toTitleCase } from "@/lib/boost-engine/utils/text";
 
 // Página autenticada com dados por usuário — nunca deve ser prerenderizada
 // estaticamente no build (precisa da sessão/cookie de cada request).
@@ -61,7 +62,7 @@ export default async function ElementPreviewPage({
             href={`/pack/${slug}`}
             className="focus-ring rounded text-[13px] text-muted underline-offset-2 hover:underline"
           >
-            {asset.pack.name}
+            {toTitleCase(asset.pack.name)}
           </Link>
         )}
 

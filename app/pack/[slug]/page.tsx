@@ -17,6 +17,7 @@ import { BottomNav } from "@/components/story-boost/BottomNav";
 import { Badge } from "@/components/ui/Badge";
 import { BrandStripe } from "@/components/ui/BrandStripe";
 import { timeAgo } from "@/lib/boost-engine/utils/time";
+import { toTitleCase } from "@/lib/boost-engine/utils/text";
 
 // Página autenticada com dados por usuário — nunca deve ser prerenderizada
 // estaticamente no build (precisa da sessão/cookie de cada request).
@@ -66,6 +67,8 @@ export default async function PackDetailPage({
   const pack = await getPackBySlug(product.id, slug);
   if (!pack) notFound();
 
+  const packTitle = toTitleCase(pack.name);
+
   const filter: PackAssetFilter = VALID_FILTERS.includes(filtro as PackAssetFilter)
     ? (filtro as PackAssetFilter)
     : "todos";
@@ -79,12 +82,12 @@ export default async function PackDetailPage({
       <div className="mx-auto flex min-h-screen max-w-md flex-col bg-paper sm:max-w-2xl lg:max-w-5xl xl:max-w-6xl">
         <BackLink />
         <div className="px-4 pb-1 pt-2">
-          <h1 className="font-display text-xl font-bold text-ink">{pack.name}</h1>
+          <h1 className="font-display text-xl font-bold text-ink">{packTitle}</h1>
           <p className="text-[13px] text-muted">{pack.assetCount} elementos · {pack.categoryName}</p>
         </div>
         <PackPaywall
           packId={pack.id}
-          packName={pack.name}
+          packName={packTitle}
           priceCents={pack.priceCents!}
           coverUrl={pack.coverUrl}
         />
@@ -106,8 +109,7 @@ export default async function PackDetailPage({
 
       <div className="px-4 pb-3">
         <div className="shadow-elevation-2 relative mb-3.5 h-36 w-full overflow-hidden rounded-3xl">
-          <img src={pack.coverUrl} alt={pack.name} className="h-full w-full object-cover" />
-          <div className="cover-overlay absolute inset-0" />
+          <img src={pack.coverUrl} alt={packTitle} className="h-full w-full object-cover" />
           <div className="absolute right-3 top-3 flex gap-2">
             {pack.isPremium ? (
               <Badge variant="price">R$ {(pack.priceCents! / 100).toFixed(2).replace(".", ",")}</Badge>
@@ -116,7 +118,7 @@ export default async function PackDetailPage({
             )}
           </div>
         </div>
-        <h1 className="font-display text-xl font-bold text-ink">{pack.name}</h1>
+        <h1 className="font-display text-xl font-bold text-ink">{packTitle}</h1>
         <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-muted">
           <span>{pack.assetCount} elementos</span>
           <span>·</span>

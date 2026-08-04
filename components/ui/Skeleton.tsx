@@ -6,7 +6,7 @@ export function Skeleton({ className = "" }: { className?: string }) {
 }
 
 /** Skeleton de um PackCard (carrossel ou grid) — espelha as proporções reais do componente
-    (título/contagem ficam sobrepostos à capa, então o skeleton é só o bloco da imagem). */
+    (capa limpa + título/contagem abaixo). */
 export function PackCardSkeleton({ variant = "grid" }: { variant?: "carousel" | "grid" }) {
   const wrap = variant === "carousel" ? "w-[19rem] shrink-0" : "w-full";
   const image = variant === "carousel" ? "h-64" : "aspect-[4/5] w-full";
@@ -14,6 +14,10 @@ export function PackCardSkeleton({ variant = "grid" }: { variant?: "carousel" | 
   return (
     <div className={`overflow-hidden rounded-3xl bg-card p-2 ${wrap}`}>
       <Skeleton className={`rounded-2xl bg-white/10 ${image}`} />
+      <div className="px-1.5 pb-1.5 pt-3">
+        <Skeleton className="h-4 w-3/4 bg-white/10" />
+        <Skeleton className="mt-2 h-3 w-1/2 bg-white/10" />
+      </div>
     </div>
   );
 }

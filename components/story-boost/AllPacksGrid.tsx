@@ -13,7 +13,7 @@ export function AllPacksGrid({
   activeCategoryName?: string;
 }) {
   return (
-    <section className="px-4 pb-32 pt-8">
+    <section className="px-4 pb-32 pt-10">
       <SectionHeader
         variant="dark"
         title={activeCategoryName ? activeCategoryName : "Biblioteca completa"}

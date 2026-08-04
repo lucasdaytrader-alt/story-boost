@@ -57,7 +57,7 @@ export function CategoryTile({
           </span>
           <div className="absolute inset-x-0 bottom-0 p-3.5">
             <p className="font-display text-[16px] font-extrabold leading-tight text-white drop-shadow-sm">
-              {category.name}
+              Coleção {category.name}
             </p>
             <p className="mt-0.5 text-[11.5px] font-medium text-white/80">
               {category.packCount} {category.packCount === 1 ? "pack" : "packs"}
@@ -73,7 +73,7 @@ export function CategoryTile({
           )}
           <div className="cover-overlay absolute inset-0" />
           <div className="absolute inset-x-0 bottom-0 p-3.5">
-            <p className="font-display text-[16px] font-bold leading-tight text-white">{category.name}</p>
+            <p className="font-display text-[16px] font-bold leading-tight text-white">Coleção {category.name}</p>
             <p className="mt-0.5 text-[12px] text-white/75">
               {category.packCount} {category.packCount === 1 ? "pack" : "packs"}
             </p>

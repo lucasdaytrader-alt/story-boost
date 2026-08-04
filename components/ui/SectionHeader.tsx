@@ -15,7 +15,7 @@ export function SectionHeader({
   const dark = variant === "dark";
 
   return (
-    <div className="flex items-baseline justify-between pb-3">
+    <div className="flex items-baseline justify-between pb-4">
       <h2 className={`font-display text-[17px] font-bold ${dark ? "text-white" : "text-ink"}`}>{title}</h2>
       {action ? (
         <Link

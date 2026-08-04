@@ -8,10 +8,10 @@ export function CategoryShowcase({ categories }: { categories: CategoryPreview[]
   if (categories.length === 0) return null;
 
   return (
-    <section className="px-4 pb-2 pt-8">
+    <section className="px-4 pb-2 pt-10">
       <SectionHeader
         variant="dark"
-        title="Navegue por nicho"
+        title="Explorar coleções"
         action={{ label: "Ver todas", href: "/categorias" }}
       />
       <CatalogGrid

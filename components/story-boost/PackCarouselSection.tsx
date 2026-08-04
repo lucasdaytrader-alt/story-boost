@@ -9,23 +9,26 @@ export function PackCarouselSection({
   packs,
   variant = "light",
   size = "md",
+  cardBadge,
 }: {
   title: string;
   subtitle?: string;
   packs: Pack[];
   variant?: "light" | "dark";
   size?: "md" | "lg";
+  /** Selo contextual aplicado a todos os cards da seção (ex.: "novo" em Novidades). */
+  cardBadge?: "new";
 }) {
   if (packs.length === 0) return null;
 
   return (
-    <section className="pb-2 pt-1">
+    <section className="py-5">
       <div className="px-4">
         <SectionHeader variant={variant} title={title} subtitle={subtitle} />
       </div>
-      <div className="no-scrollbar flex gap-3 overflow-x-auto px-4 pb-1">
+      <div className="no-scrollbar flex gap-4 overflow-x-auto px-4 pb-1">
         {packs.map((p) => (
-          <PackCard key={p.id} pack={p} size={size} />
+          <PackCard key={p.id} pack={p} size={size} badge={cardBadge} />
         ))}
       </div>
     </section>

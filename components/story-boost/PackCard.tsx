@@ -21,6 +21,7 @@ export function PackCard({
   variant = "carousel",
   index = 0,
   size = "md",
+  badge,
 }: {
   pack: PackCardData;
   variant?: "carousel" | "grid";
@@ -28,49 +29,54 @@ export function PackCard({
   index?: number;
   /** Usado no variant="carousel" — "lg" é o carrossel de destaque da Home. */
   size?: "md" | "lg";
+  /** Selo contextual opcional definido pela seção (ex.: "novo" em Novidades). */
+  badge?: "new";
 }) {
   const wrapClasses =
     variant === "carousel"
       ? size === "lg"
-        ? "w-[80vw] max-w-[340px] shrink-0"
-        : "w-[19rem] shrink-0"
-      : "w-full";
-  const imageClasses =
-    variant === "carousel" ? (size === "lg" ? "h-72" : "h-64") : GRID_ASPECTS[index % GRID_ASPECTS.length];
+        ? "w-[80vw] max-w-[340px] shrink-0 h-72"
+        : "w-[19rem] shrink-0 h-64"
+      : `w-full ${GRID_ASPECTS[index % GRID_ASPECTS.length]}`;
 
   const title = toTitleCase(pack.name);
 
   return (
     <Link
       href={`/pack/${pack.slug}`}
-      className={`focus-ring-dark transition-premium hover-lift group block overflow-hidden rounded-3xl bg-card p-2 shadow-elevation-1 ring-1 ring-white/10 active:scale-[0.98] hover:shadow-glow-brand hover:ring-white/25 ${wrapClasses}`}
+      className={`focus-ring-dark transition-premium hover-lift group relative block overflow-hidden rounded-3xl shadow-elevation-1 ring-1 ring-white/10 active:scale-[0.98] hover:shadow-glow-brand hover:ring-white/25 ${wrapClasses}`}
     >
       {/* Capa conceitual (ícone + gradiente por tema) — nunca a primeira
-          figurinha do pack. O título oficial vai abaixo, fora da arte. */}
-      <div className={`relative overflow-hidden rounded-2xl ${imageClasses}`}>
-        <PackCoverArt name={pack.name} className="cover-zoom h-full w-full" />
+          figurinha do pack. Nome/contagem ficam sobrepostos, à la Netflix. */}
+      <PackCoverArt name={pack.name} className="cover-zoom h-full w-full" />
+      <div className="cover-overlay absolute inset-0" />
 
-        {pack.isPremium ? (
-          <Badge variant="price" className="absolute right-2.5 top-2.5">
-            R$ {(pack.priceCents! / 100).toFixed(2).replace(".", ",")}
-          </Badge>
-        ) : (
-          <Badge variant="free" className="absolute right-2.5 top-2.5">
-            Grátis
-          </Badge>
-        )}
-      </div>
+      {badge === "new" && (
+        <Badge variant="new" className="pointer-events-none absolute left-2.5 top-2.5">
+          novo
+        </Badge>
+      )}
 
-      <div className="px-1.5 pb-1.5 pt-3">
+      {pack.isPremium ? (
+        <Badge variant="price" className="pointer-events-none absolute right-2.5 top-2.5">
+          R$ {(pack.priceCents! / 100).toFixed(2).replace(".", ",")}
+        </Badge>
+      ) : (
+        <Badge variant="free" className="pointer-events-none absolute right-2.5 top-2.5">
+          Grátis
+        </Badge>
+      )}
+
+      <div className="absolute inset-x-0 bottom-0 p-3.5">
         <p
           className={[
-            "font-display font-bold leading-tight text-white line-clamp-1",
+            "font-display font-bold leading-tight text-white line-clamp-1 drop-shadow-sm",
             size === "lg" ? "text-[19px] font-extrabold" : "text-[16px]",
           ].join(" ")}
         >
           {title}
         </p>
-        <p className={`mt-1 text-white/55 ${size === "lg" ? "text-[13px]" : "text-[12.5px]"}`}>
+        <p className={`mt-1 text-white/80 ${size === "lg" ? "text-[13px]" : "text-[12.5px]"}`}>
           {pack.assetCount} elementos{pack.categoryName ? ` · ${pack.categoryName}` : ""}
         </p>
       </div>

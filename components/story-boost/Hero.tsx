@@ -1,55 +1,36 @@
 import { SearchBar } from "./SearchBar";
-import { Button } from "@/components/ui/Button";
 import { Chip } from "@/components/ui/Chip";
 
 const SEARCH_EXAMPLES = ["Academia", "Promoção", "Vinhos", "Confeitaria", "Dentista", "Marketing"];
 
-export function Hero({
-  packCount,
-  assetCount,
-}: {
-  packCount: number;
-  assetCount: number;
-}) {
+function getGreeting(hour: number) {
+  if (hour >= 4 && hour < 12) return "Bom dia";
+  if (hour >= 12 && hour < 18) return "Boa tarde";
+  return "Boa noite";
+}
+
+export function Hero({ userName }: { userName: string }) {
+  const greeting = getGreeting(new Date().getHours());
+  const firstName = userName.split(" ")[0];
+
   return (
-    <section className="grain relative overflow-hidden pb-5 pt-5">
+    <section className="grain relative overflow-hidden pb-5 pt-8">
       {/* blooms — canvas escuro ganha profundidade com luz colorida, não com foto */}
       <div className="pointer-events-none absolute -left-20 -top-28 h-72 w-72 rounded-full bg-flame/40 blur-[90px]" />
       <div className="pointer-events-none absolute -right-24 top-4 h-80 w-80 rounded-full bg-ultra/40 blur-[100px]" />
       <div className="pointer-events-none absolute left-1/3 top-56 h-56 w-56 rounded-full bg-sun/25 blur-[80px]" />
 
       <div className="relative px-4">
-        <span className="glass-dark inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-semibold text-white/90">
-          <span aria-hidden>✨</span> Packs novos toda semana
-        </span>
-
-        <h1 className="mt-4 max-w-[300px] font-display text-[36px] font-extrabold leading-[1.02] tracking-tight text-white">
-          Pare de criar Stories <span className="brand-gradient-text">do zero</span>
+        <p className="text-[14px] font-medium text-white/50">
+          {greeting}, {firstName}.
+        </p>
+        <h1 className="mt-1.5 font-display text-[30px] font-extrabold leading-[1.08] tracking-tight text-white">
+          O que você quer criar hoje?
         </h1>
-
-        <p className="mt-3.5 max-w-[290px] text-[15px] leading-snug text-white/55">
-          Mais de {assetCount}+ elementos prontos, organizados por nicho —
-          escolhe, baixa e posta em segundos.
-        </p>
-
-        <div className="mt-5 flex flex-col gap-2.5 sm:flex-row">
-          <Button variant="primary" size="md" disabled title="Em breve">
-            <span aria-hidden>✨</span> Criar Story com IA
-          </Button>
-          <Button href="/categorias" variant="outline" size="md" className="border-white/20 text-white hover:border-white/40 hover:bg-white/10">
-            Explorar biblioteca
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-              <path d="M5 12h14M13 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </Button>
-        </div>
-        <p className="mt-2 text-[11px] text-white/40">
-          Criar Story com IA chega em breve — por enquanto, explore a biblioteca.
-        </p>
       </div>
 
-      <div className="relative mt-5">
-        <SearchBar variant="dark" size="lg" placeholder="O que você quer criar hoje?" />
+      <div className="relative mt-6">
+        <SearchBar variant="dark" size="lg" placeholder="Buscar por nicho, ocasião, estilo…" />
         <div className="no-scrollbar mt-3 flex gap-2 overflow-x-auto px-4">
           {SEARCH_EXAMPLES.map((example) => (
             <Chip key={example} href={`/busca?q=${encodeURIComponent(example)}`} variant="dark">
@@ -58,21 +39,6 @@ export function Hero({
           ))}
         </div>
       </div>
-
-      <div className="relative mt-4 flex items-center gap-2 px-4">
-        <Stat value={`${packCount}+`} label="packs" dotClass="bg-flame" />
-        <Stat value={`${assetCount}+`} label="elementos" dotClass="bg-sun" />
-      </div>
     </section>
-  );
-}
-
-function Stat({ value, label, dotClass }: { value: string; label: string; dotClass: string }) {
-  return (
-    <span className="glass-dark inline-flex items-center gap-2 rounded-full py-1.5 pl-2 pr-3.5">
-      <span className={`h-1.5 w-1.5 rounded-full ${dotClass}`} aria-hidden />
-      <span className="text-[13px] font-bold text-white">{value}</span>
-      <span className="text-[12px] text-white/50">{label}</span>
-    </span>
   );
 }
